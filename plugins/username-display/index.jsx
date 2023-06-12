@@ -19,8 +19,8 @@ function handleElement(elem) {
 	const message = reactFiberWalker(getFiber(elem), "message", true)?.pendingProps?.message;
     if (!message) return;
 	
-	const authorId = msg?.author?.id;
-	const authorUsername = msg.author?.username;
+	const authorId = message?.author?.id;
+	const authorUsername = message.author?.username;
 	if (!authorUsername || !authorId) return;
 
 	// message: { author: { id, username }, channel_id }
@@ -31,9 +31,11 @@ function handleElement(elem) {
 		? RelationshipStore.getNickname(authorId)
 		: GuildMemberStore.getNick(guild_id, authorId);
 
-	if (!nick) return;
+	// new discord username system is always lowercase
+	// just show the nick if the caps are the only difference
+	if (!nick || authorUsername === nick.toLowerCase()) return;
 
-	elem.firstElementChild.textContent += ` (${authorUsername})`;
+	elem.firstElementChild.textContent = `${authorUsername} (${nick})`;
  }
 
 function handleDispatch(payload) {
