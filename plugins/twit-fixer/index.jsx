@@ -6,7 +6,7 @@ const {
 
 var unintercept;
 
-function handleDispatch(req, send) {
+async function handleDispatch(req, send) {
     // only listen for message_create in the current channel
 	console.log("req:");
 	console.log(req);
@@ -14,7 +14,7 @@ function handleDispatch(req, send) {
 	try {
 		let content = req.body.content;
 		let regex = /(?<pre>https?:\/\/)(?:x|(?:(?:v|f)x)?twitter)\.com(?<post>\/\w+\/status\/\d+(?:\/photo(?:\/(?<photonum>\d+)?)?)?)(?:\/en)*(?<query>(?:\?$|[a-zA-Z0-9\.\,\;\?\'\\\+&%\$\=~_\-\*]+))?(?<fragment>#[a-zA-Z0-9\-\.]+)?/gi;
-		if (regex.test(content)) {
+		if (content && regex.test(content)) {
 			const replace = (match, pre, post, photonum, query, fragment, rest) => pre + "fxtwitter.com" + post + "/en";
 			content = content.replace(regex, replace);
 			if (content.length > 2000) {
@@ -29,7 +29,7 @@ function handleDispatch(req, send) {
 		console.log(err);
 	}
 	
-	send(req);
+	return await send(req);
 }
 
 export function onLoad() { // optional
